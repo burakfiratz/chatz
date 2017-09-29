@@ -56,14 +56,15 @@ var socket = io();
 var	userName = es("#username"),
 		loginBtn = es("#login"),
 		users = es(".users"),
-		messages = es(".messages");
+		messages = es(".messages"),
+		message = es(".message");
 		
 socket.on('hello message', function(data){
 	console.log(data);
 });
 
+//Send to server username data for login
 loginBtn.addEventListener('click', function(){
-	//Send to server username data for login
 	socket.emit('login', { username : userName.value });
 });
 
@@ -84,7 +85,22 @@ socket.on('usersList', function(data){
 	}
 	users.append(ul);
 });
-	
+
+//Press enter, send data(username, message) to server
+message.addEventListener('keydown', function(e){
+	if(e.which === 13){
+		socket.emit('sendMessageToServer', { username : userName.value, message : message.value});
+		message.value='';
+	}
+});
+
+//Print data(username, message) from server 
+socket.on('sendMessageToClient', function(data){
+	console.log(data);
+	var div = document.createElement('div');
+	div.textContent = data.username +' : '+ data.message;
+	messages.insertBefore(div, messages.firstChild);
+});
 	
 })();
 </script>

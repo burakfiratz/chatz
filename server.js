@@ -27,4 +27,8 @@ io.on('connection', function(socket){
 		io.sockets.emit('usersList', users);
 	};
 	
+	socket.on('sendMessageToServer', function(data){
+		io.sockets.emit('sendMessageToClient', data);
+	});
+	
 });
