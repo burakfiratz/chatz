@@ -2,5 +2,7 @@
 	"name": "simple-chat-app-with-socketio",
 	"version": "1.0.0",
 	"description": "My chat app with socket.io, expressjs & node. Include login, rooms & tags",
-	"dependencies": {}
+	"dependencies": {
+		"socket.io": "^2.0.3"
+	}
 }
