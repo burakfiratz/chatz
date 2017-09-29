@@ -1,8 +1,9 @@
 var express = require('express'),
 		app = express(),
 		http = require('http').Server(app),
-		io = require('socket.io')(http)
-		port = process.env.port || 3000;
+		io = require('socket.io')(http),
+		port = process.env.port || 3000,
+		users = [];
 
 http.listen(port, function(){
 	console.log('Listening port:'+ port);
@@ -15,4 +16,15 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
 	console.log('Socket open');
 	socket.emit('hello message', 'Hello socket');
+	
+	socket.on('login', function(data){
+		users.push(data);
+		io.sockets.emit('userConnected', data);
+		updateUsersList();
+	});
+	
+	function updateUsersList(){
+		io.sockets.emit('usersList', users);
+	};
+	
 });
