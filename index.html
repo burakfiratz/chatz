@@ -10,7 +10,17 @@
 
 
 
-
-
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	(function(){
+		var socket = io();
+		
+		socket.on('hello message', function(data){
+			console.log(data);
+		});
+		
+		
+	})();
+</script>
 </body>
 </html>
