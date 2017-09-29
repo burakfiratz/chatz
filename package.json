@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "My chat app with socket.io, expressjs & node. Include login, rooms & tags",
 	"dependencies": {
+		"express": "^4.16.0",
 		"socket.io": "^2.0.3"
 	}
 }
