@@ -55,7 +55,8 @@ var es = function(e){
 var socket = io();
 var	userName = es("#username"),
 		loginBtn = es("#login"),
-		users = es(".users");
+		users = es(".users"),
+		messages = es(".messages");
 		
 socket.on('hello message', function(data){
 	console.log(data);
@@ -66,6 +67,11 @@ loginBtn.addEventListener('click', function(){
 	socket.emit('login', { username : userName.value });
 });
 
+socket.on('userConnected', function(data){
+	var div = document.createElement('div');
+	div.textContent = data.username +' connected to channel';
+	messages.insertBefore(div, messages.firstChild);
+});
 
 //User list from server is printed
 socket.on('usersList', function(data){
