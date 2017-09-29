@@ -46,15 +46,41 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-	(function(){
-		var socket = io();
+//Simple html element selecting function
+// "es" is mean element selector
+var es = function(e){
+	return document.querySelector(e);
+};
+(function(){
+var socket = io();
+var	userName = es("#username"),
+		loginBtn = es("#login"),
+		users = es(".users");
 		
-		socket.on('hello message', function(data){
-			console.log(data);
-		});
-		
-		
-	})();
+socket.on('hello message', function(data){
+	console.log(data);
+});
+
+loginBtn.addEventListener('click', function(){
+	//Send to server username data for login
+	socket.emit('login', { username : userName.value });
+});
+
+
+//User list from server is printed
+socket.on('usersList', function(data){
+	users.removeChild(users.firstChild);
+	var ul = document.createElement('ul');
+	for(var x=0; x<data.length; x++){
+		var li = document.createElement('li');
+		li.textContent = data[x].username;
+		ul.appendChild(li);
+	}
+	users.append(ul);
+});
+	
+	
+})();
 </script>
 </body>
 </html>
