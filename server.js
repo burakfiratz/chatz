@@ -21,13 +21,20 @@ io.on('connection', function(socket){
 	socket.on('login', function(data){
 		users.push(data);
 		socket.username = data.username;
-		io.sockets.emit('userConnected', data);
+		socket.room = data.room;
+		socket.join(data.room);
+		io.to(data.room).emit('userConnected', data);
+		//io.sockets.emit('userConnected', data);
 		updateUsersList();
 		updateRoomsList();
 	});
 	
-	function updateUsersList(){
-		io.sockets.emit('usersList', users);
+	function updateUsersList(room='home'){
+		let u_list = users.filter(function(item){
+			if(item.room === room)
+				return true;
+		});
+		io.to(room).emit('usersList', u_list);
 	};
 	
 	function updateRoomsList(){
@@ -35,7 +42,22 @@ io.on('connection', function(socket){
 	};
 	
 	socket.on('sendMessageToServer', function(data){
-		io.sockets.emit('sendMessageToClient', data);
+		io.to(data.room).emit('sendMessageToClient', data);
+	});
+	
+	socket.on('changeRoom', function(data){
+		let oldRoom = socket.room;
+		socket.leave(socket.room);
+		socket.room = data.room;
+		socket.join(data.room);
+		io.to(oldRoom).emit('userDisconnected', { username : socket.username, room : oldRoom});
+		io.to(data.room).emit('userConnected', data);
+		
+		users.splice(users.findIndex(x => x.username === socket.username), 1);
+		users.push(data);
+		updateUsersList(oldRoom);
+		updateUsersList(data.room);
+		updateRoomsList();
 	});
 	
 	socket.on('disconnect', function(){

@@ -58,7 +58,8 @@ var	userName = es("#username"),
 		users = es(".users"),
 		messages = es(".messages"),
 		message = es(".message"),
-		rooms = es(".rooms");
+		rooms = es(".rooms"),
+		room = 'home';
 		
 socket.on('hello message', function(data){
 	console.log(data);
@@ -66,18 +67,19 @@ socket.on('hello message', function(data){
 
 //Send to server username data(username, room) for login
 loginBtn.addEventListener('click', function(){
-	socket.emit('login', { username : userName.value });
+	socket.emit('login', { username : userName.value, room : room });
 });
 
 socket.on('userConnected', function(data){
 	var div = document.createElement('div');
-	div.textContent = data.username +' connected to channel';
+	div.textContent = data.username + ' connected to ' + data.room + ' channel';
+	room = data.room;
 	messages.insertBefore(div, messages.firstChild);
 });
 
 socket.on('userDisconnected', function(data){
 	var div = document.createElement('div');
-	div.textContent = data.username +' disconnected';
+	div.textContent = data.username + ' disconnected ' + data.room + ' channel';
 	messages.insertBefore(div, messages.firstChild);
 });
 
@@ -96,7 +98,7 @@ socket.on('usersList', function(data){
 //Press enter, send data(username, message) to server
 message.addEventListener('keydown', function(e){
 	if(e.which === 13){
-		socket.emit('sendMessageToServer', { username : userName.value, message : message.value});
+		socket.emit('sendMessageToServer', { username : userName.value, room : room, message : message.value});
 		message.value='';
 	}
 });
@@ -118,11 +120,18 @@ socket.on('roomsList', function(data){
 		let a_el = document.createElement('a');
 		a_el.textContent = '#'+data[x];
 		a_el.setAttribute('href', '#');
+		a_el.addEventListener('click', function (){
+			changeRoom(this.text.slice(1));
+		});
 		li.appendChild(a_el);
 		ul.appendChild(li);
 	}
 	rooms.append(ul);
 });
+
+function changeRoom(room){
+	socket.emit('changeRoom', { username : userName.value, room : room});
+}
 	
 })();
 </script>
