@@ -1,6 +1,6 @@
 # chatz
 Simple chat app with socket.io
 
-*Basic login
+* Basic login
 
-*Rooms
+* Rooms
