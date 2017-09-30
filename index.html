@@ -57,13 +57,14 @@ var	userName = es("#username"),
 		loginBtn = es("#login"),
 		users = es(".users"),
 		messages = es(".messages"),
-		message = es(".message");
+		message = es(".message"),
+		rooms = es(".rooms");
 		
 socket.on('hello message', function(data){
 	console.log(data);
 });
 
-//Send to server username data for login
+//Send to server username data(username, room) for login
 loginBtn.addEventListener('click', function(){
 	socket.emit('login', { username : userName.value });
 });
@@ -71,6 +72,12 @@ loginBtn.addEventListener('click', function(){
 socket.on('userConnected', function(data){
 	var div = document.createElement('div');
 	div.textContent = data.username +' connected to channel';
+	messages.insertBefore(div, messages.firstChild);
+});
+
+socket.on('userDisconnected', function(data){
+	var div = document.createElement('div');
+	div.textContent = data.username +' disconnected';
 	messages.insertBefore(div, messages.firstChild);
 });
 
@@ -100,6 +107,21 @@ socket.on('sendMessageToClient', function(data){
 	var div = document.createElement('div');
 	div.textContent = data.username +' : '+ data.message;
 	messages.insertBefore(div, messages.firstChild);
+});
+
+//Room list from server is printed
+socket.on('roomsList', function(data){
+	rooms.removeChild(rooms.firstChild);
+	let ul = document.createElement('ul');
+	for(var x=0; x<data.length; x++){
+		let li = document.createElement('li');
+		let a_el = document.createElement('a');
+		a_el.textContent = '#'+data[x];
+		a_el.setAttribute('href', '#');
+		li.appendChild(a_el);
+		ul.appendChild(li);
+	}
+	rooms.append(ul);
 });
 	
 })();
